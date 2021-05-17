@@ -1,0 +1,37 @@
+---
+title: "Lego Practice cleaning"
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+df <- read_csv('./Lego_dataset_cleaned.csv')
+df
+```
+
+```{r}
+df %>% pivot_longer("theme_name_Angry Birds™": "theme_name_Technic",
+                    names_to = "theme",
+                    values_to = "theme_id") %>% 
+  mutate(theme = str_replace_all(theme, "theme_name_", "")) %>% 
+  filter(theme_id == 1) %>% 
+  pivot_longer("country_AT":"country_US",
+               names_to = "country",
+               values_to = "country_id") %>% 
+  mutate(country = str_replace_all(country, "country_", "")) %>% 
+  filter(country_id == 1) %>% 
+  pivot_longer(`ages_10+`:`ages_9-16`,
+               names_to = "age_group",
+               values_to = "age_id") %>% 
+  mutate(age_group = str_replace_all(age_group, "ages_", "")) %>% 
+  filter(age_id == 1) %>% 
+  pivot_longer(`review_difficulty_Average`:`review_difficulty_unknown`,
+               names_to = "difficulty",
+               values_to = "difficulty_id") %>% 
+  
+    
+  filter(difficulty_id == 1)
+```
+
