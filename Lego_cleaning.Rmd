@@ -3,16 +3,23 @@ title: "Lego Practice cleaning"
 ---
 
 ```{r}
+install.packages("janitor")
+```
+
+
+```{r}
 library(tidyverse)
+library(janitor)
 ```
 
 ```{r}
 df <- read_csv('./Lego_dataset_cleaned.csv')
 df
 ```
+# Unpivot data to a long format for e.g. Tableau report
 
 ```{r}
-df %>% pivot_longer("theme_name_Angry Birds™": "theme_name_Technic",
+df_pivoted <- df %>% pivot_longer("theme_name_Angry Birds™": "theme_name_Technic",
                     names_to = "theme",
                     values_to = "theme_id") %>% 
   mutate(theme = str_replace_all(theme, "theme_name_", "")) %>% 
@@ -29,9 +36,35 @@ df %>% pivot_longer("theme_name_Angry Birds™": "theme_name_Technic",
   filter(age_id == 1) %>% 
   pivot_longer(`review_difficulty_Average`:`review_difficulty_unknown`,
                names_to = "difficulty",
-               values_to = "difficulty_id") %>% 
-  
-    
+               values_to = "difficulty_id") %>%
+  mutate(difficulty = str_replace_all(difficulty, "review_difficulty_", "")) %>% 
   filter(difficulty_id == 1)
+
+df_pivoted
+```
+
+```{r}
+#df_pivoted %>% distinct(theme)
+df_pivoted <- df_pivoted %>% 
+  mutate(theme = str_replace_all(theme, '\231', ''),
+         theme = str_replace_all(theme, '®', ''),
+         theme = str_to_title(theme))
+```
+
+```{r}
+df_pivoted
+```
+
+#Start to summarize the data
+
+```{r}
+df_pivoted %>% 
+  group_by(age_group, theme) %>% 
+  summarize(mean_pieces = mean(piece_count),
+            mean_price = mean(list_price),
+            mean_val_star = mean(star_rating)) %>% 
+  ungroup() %>% 
+  arrange(age_group, mean_val_star)
+
 ```
 
